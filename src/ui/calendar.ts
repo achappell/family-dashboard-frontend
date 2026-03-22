@@ -10,6 +10,8 @@ export function setupCalendarUI() {
   container.innerHTML = "";
   const select = document.createElement("select");
   select.id = "calendarSelect";
+  select.style.cssText =
+    "padding: 8px 12px; border-radius: 8px; border: 1px solid #e5e5ea; font-size: 14px; outline: none; background: #fafafa; min-width: 200px;";
   container.appendChild(select);
 
   calendarViewModel.calendars.subscribe((calendars) => {
@@ -43,16 +45,19 @@ export function setupCalendarUI() {
     navWrapper.style.alignItems = "center";
     navWrapper.style.gap = "10px";
 
+    const btnStyle =
+      "padding: 6px 12px; cursor: pointer; border: 1px solid #e5e5ea; border-radius: 8px; background: #fff; font-weight: 500; font-size: 13px; color: #1d1d1f; box-shadow: 0 1px 2px rgba(0,0,0,0.03);";
+
     const prevBtn = document.createElement("button");
     prevBtn.innerText = "◀ Prev";
-    prevBtn.style.cursor = "pointer";
-    prevBtn.style.padding = "5px 10px";
+    prevBtn.innerHTML = "◀";
+    prevBtn.style.cssText = btnStyle;
     prevBtn.onclick = () => calendarViewModel.previousWeek();
 
     const nextBtn = document.createElement("button");
     nextBtn.innerText = "Next ▶";
-    nextBtn.style.cursor = "pointer";
-    nextBtn.style.padding = "5px 10px";
+    nextBtn.innerHTML = "▶";
+    nextBtn.style.cssText = btnStyle;
     nextBtn.onclick = () => calendarViewModel.nextWeek();
 
     const dateLabel = document.createElement("span");
@@ -67,11 +72,8 @@ export function setupCalendarUI() {
     refreshBtn.id = "calendar-refresh-btn";
     refreshBtn.innerHTML =
       "<span id='calendar-refresh-icon' style='display: inline-block;'>↻</span> Refresh";
-    refreshBtn.style.padding = "5px 15px";
-    refreshBtn.style.cursor = "pointer";
-    refreshBtn.style.borderRadius = "4px";
-    refreshBtn.style.border = "1px solid #ccc";
-    refreshBtn.style.background = "#fff";
+    ("<span id='calendar-refresh-icon' style='display: inline-block;'>↻</span>");
+    refreshBtn.style.cssText = btnStyle;
     refreshBtn.onclick = () => {
       calendarViewModel.fetchEvents(calendarViewModel.selectedCalendarId.value);
     };
@@ -116,25 +118,27 @@ export function setupCalendarUI() {
     const style = document.createElement("style");
     style.id = "weekly-cal-styles";
     style.innerHTML = `
-      :root, #app, #root { max-width: none !important; width: 100%; padding: 0; margin: 0; text-align: left; }
-      html, body { margin: 0; padding: 0; height: 100vh; width: 100%; max-width: none !important; overflow: hidden; }
+      :root, #app, #root { max-width: none !important; width: 100%; padding: 0; margin: 0; text-align: left; background: #f4f5f7; color: #1d1d1f; }
+      html, body { margin: 0; padding: 0; height: 100vh; width: 100%; max-width: none !important; overflow: hidden; background: #f4f5f7; }
       body { display: flex; flex-direction: column; padding: 15px; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
       #calendar-ui { flex-shrink: 0; width: 100%; }
-      #events-container { flex: 1; display: flex; flex-direction: column; min-height: 0; margin-top: 10px; width: 100%; }
-      .cal-container { display: flex; flex-direction: column; flex: 1; border: 1px solid #ccc; overflow: hidden; background: #fff; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); box-sizing: border-box; width: 100%; }
-      .cal-header { display: flex; border-bottom: 1px solid #ddd; background: #f5f5f5; }
-      .cal-header-tz { width: 60px; border-right: 1px solid #ddd; flex-shrink: 0; }
-      .cal-header-day { flex: 1; text-align: center; padding: 10px 0; border-right: 1px solid #ddd; font-weight: bold; font-size: 13px; color: #333; min-width: 0; box-sizing: border-box; }
+      #events-container { flex: 1; display: flex; flex-direction: column; min-height: 0; margin-top: 5px; width: 100%; }
+      .cal-container { display: flex; flex-direction: column; flex: 1; border: 1px solid #e5e5ea; overflow: hidden; background: #fff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); box-sizing: border-box; width: 100%; }
+      .cal-header { display: flex; border-bottom: 1px solid #e5e5ea; background: #fafafa; }
+      .cal-header-tz { width: 60px; border-right: 1px solid #e5e5ea; flex-shrink: 0; }
+      .cal-header-day { flex: 1; text-align: center; padding: 12px 0; border-right: 1px solid #e5e5ea; font-weight: 600; font-size: 13px; color: #1d1d1f; min-width: 0; box-sizing: border-box; }
+      .cal-header-day:last-child { border-right: none; }
       .cal-body { display: flex; flex: 1; overflow-y: auto; scroll-behavior: smooth; }
-      .cal-time-col { width: 60px; background: #f9f9f9; border-right: 1px solid #ddd; flex-shrink: 0; min-height: 1440px; }
-      .cal-time-slot { height: 60px; text-align: right; padding-right: 8px; font-size: 11px; color: #888; border-bottom: 1px solid transparent; box-sizing: border-box; transform: translateY(-7px); }
-      .cal-day-col { flex: 1; border-right: 1px solid #ddd; position: relative; background: linear-gradient(to bottom, transparent 59px, #eaeaea 60px); background-size: 100% 60px; min-width: 0; box-sizing: border-box; min-height: 1440px; }
-      .cal-event { position: absolute; left: 2px; right: 2px; background: rgba(10, 132, 255, 0.85); color: #fff; border-radius: 4px; padding: 4px; font-size: 11px; overflow: hidden; box-sizing: border-box; border-left: 3px solid #005ecb; cursor: default; z-index: 10; transition: transform 0.1s; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
-      .cal-event:hover { z-index: 20; transform: scale(1.02); }
-      .cal-event-title { font-weight: 600; white-space: nowrap; text-overflow: ellipsis; overflow: hidden; }
+      .cal-time-col { width: 60px; background: #fafafa; border-right: 1px solid #e5e5ea; flex-shrink: 0; min-height: 2880px; }
+      .cal-time-slot { height: 120px; text-align: right; padding-right: 8px; font-size: 11px; color: #86868b; border-bottom: 1px solid transparent; box-sizing: border-box; transform: translateY(-7px); font-weight: 500; }
+      .cal-day-col { flex: 1; border-right: 1px solid #e5e5ea; position: relative; background: linear-gradient(to bottom, transparent 119px, #f0f0f5 120px); background-size: 100% 120px; min-width: 0; box-sizing: border-box; min-height: 2880px; }
+      .cal-day-col:last-child { border-right: none; }
+      .cal-event { position: absolute; left: 2px; right: 2px; background: rgba(10, 132, 255, 0.9); color: #fff; border-radius: 6px; padding: 4px 6px; font-size: 11px; overflow: hidden; box-sizing: border-box; border-left: 3px solid #005ecb; cursor: default; z-index: 10; transition: transform 0.1s ease, box-shadow 0.1s ease; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+      .cal-event:hover { z-index: 20; transform: scale(1.01); box-shadow: 0 4px 8px rgba(0,0,0,0.15); }
+      .cal-event-title { font-weight: 600; white-space: nowrap; text-overflow: ellipsis; overflow: hidden; font-size: 12px; }
       .cal-event-time { font-size: 10px; opacity: 0.9; margin-top: 2px; }
-      .cal-current-time { position: absolute; left: 0; right: 0; height: 2px; background-color: #ff3b30; z-index: 50; pointer-events: none; box-shadow: 0 1px 2px rgba(0,0,0,0.2); }
-      .cal-current-time::before { content: ''; position: absolute; left: -5px; top: -4px; width: 10px; height: 10px; background-color: #ff3b30; border-radius: 50%; box-shadow: 0 1px 2px rgba(0,0,0,0.2); }
+      .cal-current-time { position: absolute; left: 0; right: 0; height: 2px; background-color: #ff3b30; z-index: 50; pointer-events: none; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+      .cal-current-time::before { content: ''; position: absolute; left: -5px; top: -4px; width: 10px; height: 10px; background-color: #ff3b30; border-radius: 50%; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
       .spin { animation: spin 1s linear infinite; }
       @keyframes spin { 100% { transform: rotate(360deg); } }
     `;
@@ -228,8 +232,8 @@ function renderEventsGrid(calendarGrid: HTMLElement, events: CalendarEvent[]) {
 
     const summary = event.summary;
     let bgColor = isAllDay
-      ? "rgba(52, 199, 89, 0.85)"
-      : "rgba(10, 132, 255, 0.85)";
+      ? "rgba(52, 199, 89, 0.9)"
+      : "rgba(10, 132, 255, 0.9)";
     let borderColor = isAllDay ? "#248a3d" : "#005ecb";
 
     for (const child of children) {
@@ -239,7 +243,7 @@ function renderEventsGrid(calendarGrid: HTMLElement, events: CalendarEvent[]) {
       ) {
         if (child.color) {
           borderColor = child.color;
-          bgColor = child.color + "D9"; // Add 85% opacity to the hex color
+          bgColor = child.color + "E6"; // ~90% opacity to the hex color for vibrant pills
         }
         break; // Stop at first matched child
       }
@@ -260,11 +264,11 @@ function renderEventsGrid(calendarGrid: HTMLElement, events: CalendarEvent[]) {
       eventEl.innerHTML = `<div class="cal-event-title">${summary}</div>`;
       allDayCounts[dayIndex]++;
     } else {
-      const top = start.getHours() * 60 + start.getMinutes();
-      let height = (end.getTime() - start.getTime()) / (1000 * 60);
-      const maxDayHeight = 24 * 60 - top;
+      const top = (start.getHours() * 60 + start.getMinutes()) * 2; // 2 pixels per minute
+      let height = ((end.getTime() - start.getTime()) / (1000 * 60)) * 2;
+      const maxDayHeight = 24 * 60 * 2 - top;
       if (height > maxDayHeight) height = maxDayHeight;
-      if (height < 20) height = 20;
+      if (height < 30) height = 30; // Minimum 30px height (15 mins visual space) so text is always readable
 
       eventEl.style.top = `${top}px`;
       eventEl.style.height = `${height}px`;
@@ -318,7 +322,7 @@ function renderEventsGrid(calendarGrid: HTMLElement, events: CalendarEvent[]) {
     const dayCol = document.getElementById(`cal-day-${dayIndex}`);
     if (!dayCol) return undefined;
 
-    const top = timeNow.getHours() * 60 + timeNow.getMinutes();
+    const top = (timeNow.getHours() * 60 + timeNow.getMinutes()) * 2;
 
     if (!lineEl) {
       lineEl = document.createElement("div");

@@ -14,37 +14,44 @@ export function setupTabs() {
     tabContentChores &&
     tabContentSettings
   ) {
+    const activeStyle = {
+      background: "#fff",
+      color: "#1d1d1f",
+      fontWeight: "600",
+      boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+    };
+    const inactiveStyle = {
+      background: "transparent",
+      color: "#555",
+      fontWeight: "500",
+      boxShadow: "none",
+    };
+
     tabCalendar.addEventListener("click", () => {
-      tabCalendar.style.background = "#eee";
-      tabCalendar.style.fontWeight = "bold";
-      tabChores.style.background = "transparent";
-      tabChores.style.fontWeight = "normal";
-      tabSettings.style.background = "transparent";
-      tabSettings.style.fontWeight = "normal";
+      Object.assign(tabCalendar.style, activeStyle);
+      Object.assign(tabChores.style, inactiveStyle);
+      Object.assign(tabSettings.style, inactiveStyle);
+
       tabContentCalendar.style.display = "flex";
       tabContentChores.style.display = "none";
       tabContentSettings.style.display = "none";
     });
 
     tabChores.addEventListener("click", () => {
-      tabChores.style.background = "#eee";
-      tabChores.style.fontWeight = "bold";
-      tabCalendar.style.background = "transparent";
-      tabCalendar.style.fontWeight = "normal";
-      tabSettings.style.background = "transparent";
-      tabSettings.style.fontWeight = "normal";
+      Object.assign(tabChores.style, activeStyle);
+      Object.assign(tabCalendar.style, inactiveStyle);
+      Object.assign(tabSettings.style, inactiveStyle);
+
       tabContentChores.style.display = "flex";
       tabContentCalendar.style.display = "none";
       tabContentSettings.style.display = "none";
     });
 
     tabSettings.addEventListener("click", () => {
-      tabSettings.style.background = "#eee";
-      tabSettings.style.fontWeight = "bold";
-      tabCalendar.style.background = "transparent";
-      tabCalendar.style.fontWeight = "normal";
-      tabChores.style.background = "transparent";
-      tabChores.style.fontWeight = "normal";
+      Object.assign(tabSettings.style, activeStyle);
+      Object.assign(tabCalendar.style, inactiveStyle);
+      Object.assign(tabChores.style, inactiveStyle);
+
       tabContentSettings.style.display = "flex";
       tabContentCalendar.style.display = "none";
       tabContentChores.style.display = "none";

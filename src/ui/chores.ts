@@ -15,18 +15,19 @@ export function setupChoresUI() {
     children.forEach((child) => {
       const col = document.createElement("div");
       col.style.flex = "1";
-      col.style.minWidth = "200px";
-      col.style.border = `2px solid ${child.color || "#ccc"}`;
-      col.style.borderRadius = "8px";
-      col.style.padding = "10px";
+      col.style.minWidth = "220px";
+      col.style.border = "1px solid #e5e5ea";
+      col.style.borderTop = `6px solid ${child.color || "#ccc"}`;
+      col.style.borderRadius = "12px";
+      col.style.padding = "20px";
       col.style.background = "#fff";
-      col.style.boxShadow = "0 2px 5px rgba(0,0,0,0.05)";
+      col.style.boxShadow = "0 4px 12px rgba(0,0,0,0.03)";
 
       const header = document.createElement("h3");
-      header.style.margin = "0 0 10px 0";
+      header.style.margin = "0 0 16px 0";
       header.style.textAlign = "center";
-      header.style.borderBottom = `1px solid ${child.color || "#eee"}`;
-      header.style.paddingBottom = "10px";
+      header.style.fontSize = "18px";
+      header.style.color = "#1d1d1f";
       header.innerText = child.name;
 
       const choreList = document.createElement("div");
