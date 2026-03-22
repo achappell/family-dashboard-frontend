@@ -1,7 +1,18 @@
 import { app, BrowserWindow, ipcMain } from "electron";
 import path from "node:path";
 import started from "electron-squirrel-startup";
-import { listEvents, getCalendars, checkAuthStatus } from "./calendar";
+import Store from "electron-store";
+import {
+  listEvents,
+  getCalendars,
+  checkAuthStatus,
+  loginWithGoogle,
+} from "./google";
+
+// electron-store v10+ is pure ESM. When externalized in a CommonJS build,
+// the import gets wrapped in a Module Namespace Object. We unwrap it safely:
+const StoreClass = (Store as any).default || Store;
+const store = new StoreClass();
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (started) {
@@ -10,17 +21,20 @@ if (started) {
 
 ipcMain.handle("auth-google", async () => {
   try {
-    const tokens = await listEvents();
-    return { success: true, tokens };
-  } catch (error) {
+    const userInfo = await loginWithGoogle();
+    store.set("currentUser", userInfo);
+    return { success: true, user: userInfo };
+  } catch (error: any) {
     return { success: false, error: error.message };
   }
 });
 
 ipcMain.handle("check-auth", async () => {
   try {
-    const isAuthenticated = await checkAuthStatus();
-    return { success: true, isAuthenticated };
+    const user: any = store.get("currentUser");
+    if (!user || !user.email) return { success: true, isAuthenticated: false };
+    const isAuthenticated = await checkAuthStatus(user.email);
+    return { success: true, isAuthenticated, user };
   } catch (error: any) {
     return { success: false, error: error.message };
   }
@@ -28,17 +42,69 @@ ipcMain.handle("check-auth", async () => {
 
 ipcMain.handle("get-calendars", async () => {
   try {
-    const calendars = await getCalendars();
+    const user: any = store.get("currentUser");
+    if (!user || !user.email) throw new Error("No user logged in");
+    const calendars = await getCalendars(user.email);
     return { success: true, calendars };
   } catch (error: any) {
     return { success: false, error: error.message };
   }
 });
 
-ipcMain.handle("get-events", async (event, calendarId: string) => {
+ipcMain.handle(
+  "get-events",
+  async (event, calendarId: string, dateStr?: string) => {
+    try {
+      const user: any = store.get("currentUser");
+      if (!user || !user.email) throw new Error("No user logged in");
+      const events = await listEvents(user.email, calendarId, dateStr);
+      return { success: true, events };
+    } catch (error: any) {
+      return { success: false, error: error.message };
+    }
+  },
+);
+
+ipcMain.handle("add-child", (event, childName: string, childColor: string) => {
   try {
-    const events = await listEvents(calendarId);
-    return { success: true, events };
+    const user: any = store.get("currentUser");
+    if (!user || !user.email) throw new Error("No user logged in");
+    const childrenKey = `children_${user.email}`;
+    const children: any[] = (store.get(childrenKey) as any[]) || [];
+    const newChild = {
+      id: Date.now().toString(),
+      name: childName,
+      color: childColor,
+    };
+    children.push(newChild);
+    store.set(childrenKey, children);
+    return { success: true, child: newChild };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+});
+
+ipcMain.handle("get-children", () => {
+  try {
+    const user: any = store.get("currentUser");
+    if (!user || !user.email) throw new Error("No user logged in");
+    const childrenKey = `children_${user.email}`;
+    const children = store.get(childrenKey) || [];
+    return { success: true, children };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+});
+
+ipcMain.handle("remove-child", (event, childId: string) => {
+  try {
+    const user: any = store.get("currentUser");
+    if (!user || !user.email) throw new Error("No user logged in");
+    const childrenKey = `children_${user.email}`;
+    let children: any[] = (store.get(childrenKey) as any[]) || [];
+    children = children.filter((c) => c.id !== childId);
+    store.set(childrenKey, children);
+    return { success: true };
   } catch (error: any) {
     return { success: false, error: error.message };
   }

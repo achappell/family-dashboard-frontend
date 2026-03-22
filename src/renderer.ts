@@ -27,133 +27,59 @@
  */
 
 import "./index.css";
+import { setupTabs } from "./ui/tabs";
+import { setupSettingsUI } from "./ui/settings";
+import { setupCalendarUI } from "./ui/calendar";
+import { setupChoresUI } from "./ui/chores";
+import { appViewModel } from "./viewmodels/MainViewModel";
+import { calendarViewModel } from "./viewmodels/CalendarViewModel";
+import { settingsViewModel } from "./viewmodels/SettingsViewModel";
 
 console.log(
   '👋 This message is being logged by "renderer.ts", included via Vite',
 );
 
-declare global {
-  interface Window {
-    api: {
-      loginToGoogle: () => Promise<{
-        success: boolean;
-        tokens?: any;
-        error?: string;
-      }>;
-      getCalendars: () => Promise<{
-        success: boolean;
-        calendars?: any[];
-        error?: string;
-      }>;
-      getEvents: (
-        calendarId: string,
-      ) => Promise<{ success: boolean; events?: any[]; error?: string }>;
-      checkAuth: () => Promise<{
-        success: boolean;
-        isAuthenticated?: boolean;
-        error?: string;
-      }>;
-    };
-  }
-}
-
 const loginBtn = document.getElementById("googleCalendar");
+const loginUi = document.getElementById("login-ui");
+const appUi = document.getElementById("app-ui");
+const welcomeMessage = document.getElementById("welcome-message");
 
-async function setupCalendarUI() {
-  const calendarResult = await window.api.getCalendars();
+// Bind ViewModel Auth State to View
+appViewModel.user.subscribe((user) => {
+  if (user) {
+    if (loginUi) loginUi.style.display = "none";
+    if (appUi) appUi.style.display = "flex";
+    if (welcomeMessage)
+      welcomeMessage.innerText = `Welcome, ${user.firstName}!`;
 
-  if (calendarResult.success && calendarResult.calendars) {
-    let container = document.getElementById("calendar-ui");
-    if (!container) {
-      container = document.createElement("div");
-      container.id = "calendar-ui";
-      document.body.appendChild(container);
-    }
-    container.innerHTML = "";
-
-    const select = document.createElement("select");
-    select.id = "calendarSelect";
-
-    calendarResult.calendars.forEach((cal) => {
-      const option = document.createElement("option");
-      option.value = cal.id;
-      option.text = cal.summary || "Unnamed Calendar";
-      select.appendChild(option);
-    });
-
-    // Load choice from localStorage
-    const savedCalendarId = localStorage.getItem("selectedCalendarId");
-    if (savedCalendarId) {
-      select.value = savedCalendarId;
-    }
-
-    // Automatically fetch when user chooses a new option
-    select.onchange = () => {
-      localStorage.setItem("selectedCalendarId", select.value);
-      fetchAndDisplayEvents(select.value);
-    };
-
-    container.appendChild(select);
-    fetchAndDisplayEvents(select.value); // Fetch immediately for selected choice
-  }
-}
-
-async function fetchAndDisplayEvents(calendarId: string) {
-  let eventsContainer = document.getElementById("events-container");
-  if (!eventsContainer) {
-    eventsContainer = document.createElement("div");
-    eventsContainer.id = "events-container";
-    document.body.appendChild(eventsContainer);
-  }
-
-  eventsContainer.innerHTML = "<p>Loading events...</p>";
-
-  const eventsResult = await window.api.getEvents(calendarId);
-  if (eventsResult.success && eventsResult.events) {
-    if (eventsResult.events.length === 0) {
-      eventsContainer.innerHTML = "<p>No upcoming events found.</p>";
-      return;
-    }
-
-    const ul = document.createElement("ul");
-    eventsResult.events.forEach((event: any) => {
-      const li = document.createElement("li");
-      const start = event.start?.dateTime ?? event.start?.date;
-      const date = new Date(start).toLocaleString(); // Nicely formatted local time
-      li.innerText = `${date} - ${event.summary}`;
-      ul.appendChild(li);
-    });
-
-    eventsContainer.innerHTML = "<h3>Upcoming Events:</h3>";
-    eventsContainer.appendChild(ul);
+    // Load dependent view models once authenticated
+    settingsViewModel.fetchChildren();
+    calendarViewModel.fetchCalendars();
   } else {
-    eventsContainer.innerHTML = `<p>Error fetching events: ${eventsResult.error}</p>`;
+    if (loginUi) loginUi.style.display = "flex";
+    if (appUi) appUi.style.display = "none";
   }
-}
+}, true);
 
-const handleLogin = async () => {
-  const result = await window.api.loginToGoogle();
-
-  if (result.success) {
-    if (loginBtn) loginBtn.style.display = "none";
-    await setupCalendarUI();
-  } else {
-    console.error("Auth failed:", result.error);
-  }
+// Bind Errors from all View Models
+const handleError = (error: string | null) => {
+  if (error) alert("Error: " + error);
 };
-
-async function init() {
-  const authResult = await window.api.checkAuth();
-  if (authResult.success && authResult.isAuthenticated) {
-    if (loginBtn) loginBtn.style.display = "none"; // Hide button if already logged in
-    await setupCalendarUI();
-  } else if (loginBtn) {
-    loginBtn.style.display = "block";
-  }
-}
+appViewModel.error.subscribe(handleError);
+calendarViewModel.error.subscribe(handleError);
+settingsViewModel.error.subscribe(handleError);
 
 if (loginBtn) {
-  loginBtn.addEventListener("click", handleLogin);
+  loginBtn.addEventListener("click", () => appViewModel.login());
+}
+
+async function init() {
+  setupTabs();
+  setupSettingsUI();
+  setupCalendarUI();
+  setupChoresUI();
+
+  await appViewModel.init();
 }
 
 // Boot up sequence

@@ -2,13 +2,190 @@
 <html>
   <head>
     <meta charset="UTF-8" />
-    <title>Hello World!</title>
-
+    <title>Family Calendar</title>
   </head>
   <body>
-    <h1>💖 Hello World!</h1>
-    <p>Welcome to your Electron application.</p>
-    <button id="googleCalendar">Connect Google Calendar</button>
+    <div
+      id="login-ui"
+      style="
+        display: flex;
+        height: 100vh;
+        width: 100%;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+      "
+    >
+      <h1 style="margin-bottom: 20px">Family Hub</h1>
+      <button
+        id="googleCalendar"
+        style="padding: 10px 20px; font-size: 16px; cursor: pointer"
+      >
+        Login with Google
+      </button>
+    </div>
+
+    <div
+      id="app-ui"
+      style="display: none; height: 100%; width: 100%; flex-direction: column"
+    >
+      <h2 id="welcome-message" style="margin: 0 0 10px 0"></h2>
+
+      <div
+        id="tab-bar"
+        style="
+          display: flex;
+          border-bottom: 1px solid #ccc;
+          margin-bottom: 15px;
+          flex-shrink: 0;
+        "
+      >
+        <button
+          id="tab-calendar"
+          style="
+            padding: 10px 20px;
+            cursor: pointer;
+            border: none;
+            background: #eee;
+            font-weight: bold;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+          "
+        >
+          Calendar
+        </button>
+        <button
+          id="tab-chores"
+          style="
+            padding: 10px 20px;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+          "
+        >
+          Chore Chart
+        </button>
+        <button
+          id="tab-settings"
+          style="
+            padding: 10px 20px;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+          "
+        >
+          Settings
+        </button>
+      </div>
+
+      <div
+        id="tab-content-calendar"
+        style="
+          display: flex;
+          flex-direction: column;
+          flex: 1;
+          width: 100%;
+          min-height: 0;
+        "
+      ></div>
+
+      <div
+        id="tab-content-chores"
+        style="
+          display: none;
+          flex-direction: column;
+          flex: 1;
+          width: 100%;
+          min-height: 0;
+        "
+      >
+        <div
+          id="chore-chart-container"
+          style="
+            flex: 1;
+            display: flex;
+            overflow-x: auto;
+            gap: 15px;
+            padding-bottom: 15px;
+            min-height: 0;
+          "
+        ></div>
+      </div>
+
+      <div
+        id="tab-content-settings"
+        style="
+          display: none;
+          flex-direction: column;
+          flex: 1;
+          width: 100%;
+          min-height: 0;
+          overflow-y: auto;
+        "
+      >
+        <div
+          style="
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            flex-shrink: 0;
+          "
+        >
+          <h3 style="margin-top: 0; margin-bottom: 10px">Calendar Sync</h3>
+          <div id="calendar-settings-container"></div>
+        </div>
+
+        <div
+          id="children-ui"
+          style="
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            flex-shrink: 0;
+          "
+        >
+          <h3 style="margin-top: 0">Children</h3>
+          <ul id="children-list" style="padding-left: 20px"></ul>
+          <div style="display: flex; gap: 10px">
+            <input
+              type="text"
+              id="new-child-name"
+              placeholder="Child's name"
+              style="padding: 5px; flex: 1; max-width: 200px"
+            />
+            <input
+              type="color"
+              id="new-child-color"
+              value="#ff3b30"
+              title="Choose color"
+              style="
+                padding: 0;
+                cursor: pointer;
+                height: 30px;
+                width: 40px;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+              "
+            />
+            <button
+              id="add-child-btn"
+              style="padding: 5px 15px; cursor: pointer"
+            >
+              Add Child
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <script type="module" src="/src/renderer.ts"></script>
   </body>
 </html>
