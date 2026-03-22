@@ -90,3 +90,11 @@ typings/
 
 # Electron-Forge
 out/
+
+# Build output
+node_modules/
+dist/
+dist-electron/
+
+/credentials.json
+/token.json
