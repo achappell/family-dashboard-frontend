@@ -1,8 +1,11 @@
 import { google } from "googleapis";
 
-const CLIENT_ID =
-  "[REDACTED_GOOGLE_CLIENT_ID_1]";
-const CLIENT_SECRET = "[REDACTED_GOOGLE_SECRET_1]";
+const CLIENT_ID = process.env.VITE_GOOGLE_CLIENT_ID;
+const CLIENT_SECRET = process.env.VITE_GOOGLE_CLIENT_SECRET;
+
+if (!CLIENT_ID || !CLIENT_SECRET) {
+  console.error("Missing Google Client ID or Secret in environment variables.");
+}
 
 function getAuthClient(tokens: {
   access_token: string;
