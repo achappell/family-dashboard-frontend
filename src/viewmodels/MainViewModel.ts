@@ -1,4 +1,4 @@
-import { User } from "../models";
+import { User } from "../models/models";
 import { Observable } from "../Observable";
 
 export class MainViewModel {

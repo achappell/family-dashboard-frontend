@@ -1,4 +1,4 @@
-import { CalendarInfo, CalendarEvent } from "../models";
+import { CalendarInfo, CalendarEvent } from "../models/models";
 import { Observable } from "../Observable";
 
 export class CalendarViewModel {

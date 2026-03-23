@@ -54,7 +54,9 @@ appViewModel.user.subscribe((user) => {
 
     // Load dependent view models once authenticated
     settingsViewModel.fetchChildren();
+    settingsViewModel.fetchFamily();
     calendarViewModel.fetchCalendars();
+    calendarViewModel.fetchEvents(calendarViewModel.selectedCalendarId.value);
   } else {
     if (loginUi) loginUi.style.display = "flex";
     if (appUi) appUi.style.display = "none";

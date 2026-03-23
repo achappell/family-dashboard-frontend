@@ -1,9 +1,50 @@
-import { Child } from "../models";
 import { Observable } from "../Observable";
+import { Family, Child } from "../models/models";
 
 export class SettingsViewModel {
-  public children = new Observable<Child[]>([]);
+  public family = new Observable<Family | null>(null);
+  public inviteCode = new Observable<string | null>(null);
   public error = new Observable<string | null>(null);
+  public children = new Observable<Child[]>([]);
+
+  async fetchFamily() {
+    const response = await window.api.getFamily();
+    if (response.success && response.family) {
+      this.family.value = response.family;
+    } else {
+      this.error.value = response.error || "Failed to fetch family";
+    }
+  }
+
+  async updateFamilyName(name: string) {
+    const response = await window.api.updateFamilyName(name);
+    if (response.success && this.family.value) {
+      this.family.value = { ...this.family.value, name }; // trigger reactivity
+    } else {
+      this.error.value = response.error || "Failed to update family name";
+    }
+  }
+
+  async generateInvite() {
+    const response = await window.api.generateInvite();
+    if (response.success && response.code) {
+      this.inviteCode.value = response.code;
+    } else {
+      this.error.value = response.error || "Failed to generate invite";
+    }
+  }
+
+  async joinFamily(code: string) {
+    const response = await window.api.joinFamily(code);
+    if (response.success) {
+      alert("Successfully joined new family!");
+      this.fetchFamily();
+      // Optionally fetch children/chores again here to refresh the UI
+      await this.fetchChildren();
+    } else {
+      this.error.value = response.error || "Failed to join family";
+    }
+  }
 
   async fetchChildren() {
     const res = await window.api.getChildren();

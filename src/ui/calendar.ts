@@ -1,6 +1,6 @@
 import { calendarViewModel } from "../viewmodels/CalendarViewModel";
 import { settingsViewModel } from "../viewmodels/SettingsViewModel";
-import { CalendarEvent } from "../models";
+import { CalendarEvent } from "../models/models";
 
 export function setupCalendarUI() {
   const container = document.getElementById("calendar-settings-container");
@@ -147,7 +147,7 @@ export function setupCalendarUI() {
 
   calendarViewModel.events.subscribe((events) => {
     renderEventsGrid(calendarGrid, events);
-  });
+  }, true);
 
   // Repaint calendar if children details (like colors) are updated
   settingsViewModel.children.subscribe(() => {

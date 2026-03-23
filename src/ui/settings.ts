@@ -1,63 +1,85 @@
 import { settingsViewModel } from "../viewmodels/SettingsViewModel";
 
 export function setupSettingsUI() {
+  const familyNameInput = document.getElementById(
+    "family-name-input",
+  ) as HTMLInputElement;
+  const saveNameBtn = document.getElementById("save-family-name-btn");
+
+  const generateInviteBtn = document.getElementById("generate-invite-btn");
+  const inviteCodeDisplay = document.getElementById("invite-code-display");
+
+  const joinCodeInput = document.getElementById(
+    "join-code-input",
+  ) as HTMLInputElement;
+  const joinFamilyBtn = document.getElementById("join-family-btn");
+
   const childrenList = document.getElementById("children-list");
-  const addChildBtn = document.getElementById("add-child-btn");
-  const newChildInput = document.getElementById(
+  const newChildName = document.getElementById(
     "new-child-name",
   ) as HTMLInputElement;
   const newChildColor = document.getElementById(
     "new-child-color",
   ) as HTMLInputElement;
+  const addChildBtn = document.getElementById("add-child-btn");
+
+  // Observers
+  settingsViewModel.family.subscribe((family) => {
+    if (family && familyNameInput) familyNameInput.value = family.name;
+  });
+
+  settingsViewModel.inviteCode.subscribe((code) => {
+    if (code && inviteCodeDisplay) {
+      inviteCodeDisplay.innerText = `Your Code: ${code} (Valid for 15 mins)`;
+    }
+  });
 
   settingsViewModel.children.subscribe((children) => {
     if (!childrenList) return;
     childrenList.innerHTML = "";
-    if (children.length === 0) {
-      childrenList.innerHTML =
-        "<li style='color: #666;'>No children added yet.</li>";
-      return;
-    }
 
     children.forEach((child) => {
       const li = document.createElement("li");
-      li.style.marginBottom = "8px";
-      li.style.padding = "8px 12px";
-      li.style.background = "#fafafa";
-      li.style.border = "1px solid #e5e5ea";
-      li.style.borderRadius = "8px";
-      li.style.display = "flex";
-      li.style.justifyContent = "space-between";
-      li.style.alignItems = "center";
-      li.style.maxWidth = "250px";
-
-      const nameSpan = document.createElement("span");
-      nameSpan.innerHTML = `<span style="display: inline-block; width: 12px; height: 12px; background-color: ${child.color || "#005ecb"}; border-radius: 50%; margin-right: 8px; vertical-align: middle;"></span>${child.name}`;
-
-      const removeBtn = document.createElement("button");
-      removeBtn.innerText = "Remove";
-      removeBtn.style.cursor = "pointer";
-      removeBtn.style.padding = "4px 8px";
-      removeBtn.style.fontSize = "12px";
-      removeBtn.style.background = "#ff3b30";
-      removeBtn.style.color = "#fff";
-      removeBtn.style.border = "none";
-      removeBtn.style.borderRadius = "6px";
-      removeBtn.style.fontWeight = "500";
-      removeBtn.onclick = () => settingsViewModel.removeChild(child.id);
-
-      li.appendChild(nameSpan);
-      li.appendChild(removeBtn);
+      li.style.cssText =
+        "display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;";
+      li.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div style="width: 20px; height: 20px; border-radius: 50%; background: ${child.color};"></div>
+          <span style="font-size: 16px; color: #1d1d1f;">${child.name}</span>
+        </div>
+        <button data-id="${child.id}" class="remove-child-btn" style="padding: 4px 8px; background: transparent; color: #ff3b30; border: 1px solid #ff3b30; border-radius: 6px; cursor: pointer;">Remove</button>
+      `;
       childrenList.appendChild(li);
+    });
+
+    document.querySelectorAll(".remove-child-btn").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        const id = (e.target as HTMLButtonElement).getAttribute("data-id");
+        if (id) settingsViewModel.removeChild(id);
+      });
     });
   }, true);
 
-  if (addChildBtn) {
-    addChildBtn.addEventListener("click", () => {
-      if (!newChildInput || !newChildInput.value.trim()) return;
-      const color = newChildColor ? newChildColor.value : "#ff3b30";
-      settingsViewModel.addChild(newChildInput.value.trim(), color);
-      newChildInput.value = "";
-    });
-  }
+  // Event Listeners
+  saveNameBtn?.addEventListener("click", () => {
+    settingsViewModel.updateFamilyName(familyNameInput.value);
+  });
+
+  generateInviteBtn?.addEventListener("click", () => {
+    settingsViewModel.generateInvite();
+  });
+
+  joinFamilyBtn?.addEventListener("click", () => {
+    if (joinCodeInput.value) {
+      settingsViewModel.joinFamily(joinCodeInput.value);
+    }
+  });
+
+  addChildBtn?.addEventListener("click", () => {
+    if (newChildName.value && newChildColor.value) {
+      settingsViewModel.addChild(newChildName.value, newChildColor.value);
+      newChildName.value = ""; // Reset input
+      newChildColor.value = "#ff3b30"; // Reset color to default
+    }
+  });
 }

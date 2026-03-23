@@ -195,6 +195,111 @@
         </div>
 
         <div
+          style="
+            margin-bottom: 20px;
+            padding: 20px;
+            background: #fff;
+            border: 1px solid #e5e5ea;
+            border-radius: 12px;
+            flex-shrink: 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+          "
+        >
+          <h3 style="margin-top: 0; margin-bottom: 16px; color: #1d1d1f">
+            Family Settings
+          </h3>
+          <div style="display: flex; gap: 10px; margin-bottom: 20px">
+            <label style="line-height: 35px">Family Name:</label>
+            <input
+              type="text"
+              id="family-name-input"
+              style="
+                padding: 8px 12px;
+                border: 1px solid #e5e5ea;
+                border-radius: 8px;
+              "
+            />
+            <button
+              id="save-family-name-btn"
+              style="
+                padding: 8px 16px;
+                background: #0a84ff;
+                color: #fff;
+                border: none;
+                border-radius: 8px;
+                cursor: pointer;
+              "
+            >
+              Save Name
+            </button>
+          </div>
+
+          <hr
+            style="border: 0; border-top: 1px solid #e5e5ea; margin: 20px 0"
+          />
+
+          <h3 style="margin-top: 0; margin-bottom: 16px; color: #1d1d1f">
+            Invite Member
+          </h3>
+          <button
+            id="generate-invite-btn"
+            style="
+              padding: 8px 16px;
+              background: #34c759;
+              color: #fff;
+              border: none;
+              border-radius: 8px;
+              margin-bottom: 10px;
+              cursor: pointer;
+            "
+          >
+            Generate Invite Code
+          </button>
+          <p
+            id="invite-code-display"
+            style="
+              font-weight: bold;
+              font-size: 1.2em;
+              color: #1d1d1f;
+              margin: 0;
+            "
+          ></p>
+
+          <hr
+            style="border: 0; border-top: 1px solid #e5e5ea; margin: 20px 0"
+          />
+
+          <h3 style="margin-top: 0; margin-bottom: 16px; color: #1d1d1f">
+            Join a Family
+          </h3>
+          <div style="display: flex; gap: 10px">
+            <input
+              type="text"
+              id="join-code-input"
+              placeholder="Enter 6-digit code"
+              style="
+                padding: 8px 12px;
+                border: 1px solid #e5e5ea;
+                border-radius: 8px;
+              "
+            />
+            <button
+              id="join-family-btn"
+              style="
+                padding: 8px 16px;
+                background: #0a84ff;
+                color: #fff;
+                border: none;
+                border-radius: 8px;
+                cursor: pointer;
+              "
+            >
+              Join
+            </button>
+          </div>
+        </div>
+
+        <div
           id="children-ui"
           style="
             margin-bottom: 20px;

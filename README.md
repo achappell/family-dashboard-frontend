@@ -5,6 +5,7 @@ A modern, Electron-based desktop application designed to keep your family organi
 ## Features
 
 - **Google Calendar Integration:** Securely login via OAuth2 to sync and view your calendars.
+- **Cloud Sync:** Keeps chores, schedules, and children profiles synchronized across multiple devices using Supabase.
 - **Weekly Calendar View:** A custom, responsive weekly calendar layout featuring a real-time current time indicator, auto-scrolling, and sticky all-day events.
 - **Child Management:** Add your children to the system and assign each a custom color.
 - **Smart Color-Coding:** Calendar events containing a child's name will automatically inherit their assigned color in the calendar view.
@@ -13,12 +14,15 @@ A modern, Electron-based desktop application designed to keep your family organi
 
 ## Prerequisites
 
+- [Docker](https://www.docker.com/) (for local backend development)
 - [Node.js](https://nodejs.org/) (v16 or higher recommended)
+- A [Supabase](https://supabase.com) account for the PostgreSQL database and Auth.
 - A Google Cloud Platform account to generate OAuth 2.0 credentials.
 
 ## Setup & Configuration
 
 1. **Install dependencies:**
+
    ```bash
    npm install
    ```
@@ -60,4 +64,11 @@ This project follows the **Model-View-ViewModel (MVVM)** design pattern to clean
 - **Models (`src/models.ts`):** Pure data interfaces (User, Child, CalendarEvent).
 - **ViewModels (`src/viewmodels/`):** Manage state, handle business logic, and communicate with Electron's IPC bridge. Uses a custom Vanilla TypeScript `Observable` pattern.
 - **Views (`src/ui/`):** UI components that subscribe to the ViewModels and automatically update the DOM when data changes.
-- **Backend (`src/main.ts`, `src/google.ts`):** Handles secure Node.js APIs, file storage (`electron-store`), and Google OAuth flows.- **Backend (`src/main.ts`, `src/google.ts`):** Handles secure Node.js APIs, file storage (`electron-store`), and Google OAuth flows.
+- **Desktop Main Process (`src/main.ts`, `src/google.ts`):** Handles local OS integrations and the Electron IPC bridge.
+
+### Cloud Architecture
+
+To support cross-device synchronization and secure external API communication:
+
+- **Supabase (Database & Auth):** Replaces local storage. Acts as the primary PostgreSQL database for syncing Family, Child, and Chore data across devices via Realtime subscriptions.
+- **Google Cloud Run (API):** A containerized Node.js/Express service that securely manages Google Calendar Webhook subscriptions, periodic syncing tasks, and hides sensitive API secrets from the client app.

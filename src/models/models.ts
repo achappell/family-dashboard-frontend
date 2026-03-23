@@ -22,3 +22,20 @@ export interface CalendarEvent {
   end: Date;
   isAllDay: boolean;
 }
+
+export interface Family {
+  id: string;
+  name: string;
+}
+
+export interface Chore {
+  id: string;
+  title: string;
+  description?: string;
+  childId?: string;
+  isCompleted: boolean;
+  dueDate?: Date;
+  recurrence: string; // 'none', 'daily', 'weekly', etc.
+  recurringDays: number[]; // 0-6
+  lastCompletedAt?: Date;
+}

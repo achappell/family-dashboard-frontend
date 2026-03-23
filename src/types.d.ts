@@ -1,4 +1,4 @@
-import { User, Child, CalendarInfo } from "./models";
+import { User, Child, CalendarInfo, Family } from "./models/models";
 
 export {};
 
@@ -36,6 +36,22 @@ declare global {
       }>;
       removeChild: (
         id: string,
+      ) => Promise<{ success: boolean; error?: string }>;
+      generateInvite: () => Promise<{
+        success: boolean;
+        code?: string;
+        error?: string;
+      }>;
+      joinFamily: (
+        code: string,
+      ) => Promise<{ success: boolean; error?: string }>;
+      getFamily: () => Promise<{
+        success: boolean;
+        family?: Family;
+        error?: string;
+      }>;
+      updateFamilyName: (
+        name: string,
       ) => Promise<{ success: boolean; error?: string }>;
     };
   }
