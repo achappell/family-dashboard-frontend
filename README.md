@@ -28,16 +28,16 @@ A modern, Electron-based desktop application designed to keep your family organi
    ```
 
 2. **Configure Google API Credentials:**
-   To enable Google Calendar sync, you must provide a `credentials.json` file.
+   To enable Google Calendar sync, you must provide your Google OAuth credentials via environment variables in your `.env` file.
    - Go to the Google Cloud Console.
    - Create a new project and enable the **Google Calendar API**.
    - Navigate to **APIs & Services > Credentials**.
-   - Configure the OAuth consent screen. Add your email as a test user and include the following scopes:
-     - `.../auth/calendar.readonly`
-     - `.../auth/userinfo.email`
-     - `.../auth/userinfo.profile`
-   - Create **OAuth client ID** credentials (choose "Desktop app").
-   - Download the JSON file, rename it to `credentials.json`, and place it in the root directory of this project.
+   - Create **OAuth client ID** credentials.
+   - Add the following to your `.env` file:
+     ```
+     VITE_GOOGLE_CLIENT_ID=your_client_id
+     VITE_GOOGLE_CLIENT_SECRET=your_client_secret
+     ```
 
 ## Running the Application
 
